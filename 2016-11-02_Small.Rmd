@@ -1,0 +1,133 @@
+---
+title: "STA257"
+author: "Neil Montgomery | HTML is official | PDF versions good for in-class use only"
+date: "Last edited: `r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output: 
+  ioslides_presentation: 
+    css: '../styles.css' 
+    widescreen: true 
+    transition: 0.001
+header-includes:
+- \usepackage{cancel}
+---
+\newcommand\given[1][]{\:#1\vert\:}
+\newcommand\P[1]{P{\left(#1\right)}}
+\newcommand\F[1]{F_{\tiny{#1}}}
+\newcommand\f[1]{f_{\tiny{#1}}}
+\newcommand\p[1]{p_{\tiny{#1}}}
+
+
+## joint cdf - continuous case
+
+The joint cdf $F(x,y) = P(X \le x, Y \le y)$ can be calculated:
+$$F(x,y) = \int\limits_{-\infty}^y\!\int\limits_{-\infty}^x f(u,v)\,du\,dv$$
+
+It is a mystery of multivariable calculus how to obtain $f$ from $F$
+
+## "partial" derivatives crash course - I { .build }
+
+Maybe you got this far in your co-requisite! 
+
+With a function $g(x,y)$ you can take the derivative with respect to one variable at a time, holding the other variable constant. Notation:
+$$\frac{\partial}{\partial x}g(x,y) \quad \text{ and } \quad \frac{\partial}{\partial y}g(x,y).$$
+
+When $g$ is "smooth" you get the nice result:
+$$\frac{\partial}{\partial y}\left[\frac{\partial}{\partial x}g(x,y)\right]=
+\frac{\partial}{\partial x}\left[\frac{\partial}{\partial y}g(x,y)\right],$$
+and we just call this:
+$$\frac{\partial^2}{\partial x\partial y}g(x,y).$$
+
+## joint cdf to joint density
+
+Just take all the "partial" derivatives in any order you like.
+
+$$\frac{\partial^2}{\partial x\partial y}F(x,y) = f(x,y)$$
+
+"Proof: ..."
+
+Examples can be challenging! Consider $f(x,y) = xy$ on $0<x<1$, $0<y<2$ (...to be revisited...)
+
+## marginal cdf and marginal density { .build }
+
+Just like in the discrete case we can recover information about $X$ and $Y$ individually by "integrating out" the other variable. The marginal densities are:
+$$\f{X}(x) = \int\limits_{-\infty}^\infty f(x,y)\,dy\\
+\f{Y}(y) = \int\limits_{-\infty}^\infty f(x,y)\,dx$$
+
+What about the marginal cdfs? 
+
+Continue the example on the previous slide.
+
+## picture of F(x,y)
+
+```{r, echo=FALSE, message=FALSE, cache=TRUE, eval=FALSE}
+library(plotly)
+library(htmlwidgets)
+
+cdf_xy <- function(x,y) {
+  if(x < 0 || y < 0) {
+    return(0)
+  } else if(x >= 1 && y >= 2) {
+    return(1)
+  } else if(y >= 2 && x > 0 && x < 1) {
+    return(x^2)
+  } else if(x >= 1 && y > 0 && y < 2) {
+    return(y^2/4)
+  } else {
+    return(x^2*y^2/4)
+  }
+}
+
+x <- seq(0.25, 1.25, length.out=150)
+y <- seq(0.25, 2.25, length.out=200)
+xy <- expand.grid(x=x,y=y)
+
+xyz <- xy %>% mutate(z = apply(., 1, function(u) cdf_xy(u[1],u[2])))
+
+plot_ly(xyz, x=~x, y=~y, z=~z, type="mesh3d")
+```
+
+## joint/marginal pdf example
+
+Example D from the book.
+
+$$f(x,y) = \begin{cases}
+\lambda^2\exp(-\lambda y) &: 0 \le x \le y,\, \lambda > 0\\
+0 &: \text{ otherwise.}
+\end{cases}$$
+
+Exercise: review Example E from the book "Bivariate Normal". We will revisit this example.
+
+# independent random variables (which the book gets a bit wrong)
+
+## recall some definitions and results { .build }
+
+Events $A$ and $B$ are independent if $P(A\cap B) = P(A)P(B)$.
+
+$A \perp B \iff A^c \perp B \iff A \perp B^c \iff A^c \perp B^c$
+
+"Experiments" $\mathcal{E}_A = \{A_1, A_2, \ldots\}$ and $\mathcal{E}_B = \{B_1, B_2, \ldots\}$ are independent if $A_i \perp B_j$ for all $i,\,j$.
+
+**Definition:** Random variables $X$ and $Y$ are *independent* if:
+$$P(X \in A, Y \in B) = P(X \in A)P(Y \in B)$$
+for any\* $A, B \subset \mathbb{R}$.
+
+## the book's definition is actually a *theorem* { .build }
+
+Theorem: $X \perp Y$ if and only if the joint cdf $F(x,y) = \F{X}(x)\F{Y}(y)$ is the product of the marginal cdfs.
+
+Proof: $\Longleftarrow$ ("only if") too hard; $\Longrightarrow$ left as exercise.
+
+Corollary: $X \perp Y$ if and only if the joint $f(x,y) = \f{X}(x)\f{Y}(y)$
+
+To verify, in practice check two things:
+
+1. The density factors.
+2. The non-zero region is a rectangle (possibly infinite in either direction.)
+
+## examples
+
+1. $f(x, y) = xy$ on $0 < x < 1$ and $0 < y < 2$.
+
+2. $f(x, y) = \lambda^2\exp(-\lambda y)$ on $0 < x < y < \infty$.
+
+3. $f(x, y) = \lambda^3y\exp(-\lambda(x+y))$ on $x > 0$ and $y > 0$.
