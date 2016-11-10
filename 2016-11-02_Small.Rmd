@@ -130,4 +130,4 @@ To verify, in practice check two things:
 
 2. $f(x, y) = \lambda^2\exp(-\lambda y)$ on $0 < x < y < \infty$.
 
-3. $f(x, y) = \lambda^3y\exp(-\lambda(x+y))$ on $x > 0$ and $y > 0$.
+3. $f(x, y) = \lambda^2y\exp(-\lambda(x+y))$ on $x > 0$ and $y > 0$. *Was changed to $\lambda^2$ from $\lambda^3$ in class.*
